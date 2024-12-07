@@ -83,3 +83,20 @@ print(end_code)
 predicted_path_code = clf.predict([[start_code, end_code]])
 predicted_path = copyDataFrameY.cat.categories[predicted_path_code[0]]
 print(f"Ruta predicha para ir de {start} a {end}: {predicted_path}")
+
+
+# Obtener los pesos de las aristas (tiempo)
+edge_labels = nx.get_edge_attributes(G, 'weight')
+
+# Dibujar el grafo
+pos = nx.spring_layout(G)  # Posiciones de los nodos
+plt.figure(figsize=(8, 6))
+
+# Dibujar nodos y aristas
+nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=3000, font_size=15, font_weight='bold', edge_color='gray')
+
+# Dibujar los pesos de las aristas
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=12, font_color='red')
+
+plt.title("Grafo del Sistema de Transporte", size=16)
+plt.show()
