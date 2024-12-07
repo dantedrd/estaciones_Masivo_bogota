@@ -42,3 +42,44 @@ for source in G.nodes():
                 continue
 
 routes_df = pd.DataFrame(routes)
+
+# Crear características y etiquetas para el modelo
+X = routes_df[['start_station', 'end_station']]
+y = routes_df['path']
+print(y)
+
+copyDataFrameX = X.copy()
+copyDataFrameY = y.copy()
+
+copyDataFrameX_1 = X.copy()
+copyDataFrameY_1 = y.copy()
+
+
+copyDataFrameX['start_station'] = X['start_station'].astype('category')
+copyDataFrameX['end_station'] = X['end_station'].astype('category')
+copyDataFrameY=copyDataFrameY.astype('category')
+
+copyDataFrameX_1['start_station'] = X['start_station'].astype('category').cat.codes
+copyDataFrameX_1['end_station'] = X['end_station'].astype('category').cat.codes
+copyDataFrameY_1=copyDataFrameY.astype('category').cat.codes
+
+
+X_train, X_test, y_train, y_test = train_test_split(copyDataFrameX_1, copyDataFrameY_1, test_size=0.2, random_state=42)
+clf = RandomForestClassifier(random_state=42)
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy del modelo: {accuracy:.2f}")
+
+
+start = 'A'
+end = 'F'
+
+start_code = copyDataFrameX['start_station'].cat.categories.get_loc(start)
+end_code = copyDataFrameX.loc[:, 'end_station'].cat.categories.get_loc(end)
+print(start_code)
+print(end_code)
+
+predicted_path_code = clf.predict([[start_code, end_code]])
+predicted_path = copyDataFrameY.cat.categories[predicted_path_code[0]]
+print(f"Ruta predicha para ir de {start} a {end}: {predicted_path}")
